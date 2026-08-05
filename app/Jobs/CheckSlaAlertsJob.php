@@ -1,0 +1,40 @@
+<?php
+
+namespace App\Jobs;
+
+use App\Enums\TicketStatus;
+use App\Models\ExchangeTicket;
+use App\Notifications\SlaWarningNotification;
+use App\Services\SlaService;
+use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Log;
+
+class CheckSlaAlertsJob implements ShouldQueue
+{
+    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+
+    public function handle(SlaService $slaService): void
+    {
+        $tickets = ExchangeTicket::awaitingSlaAlert()->get();
+
+        foreach ($tickets as $ticket) {
+            // Marcar como alertado
+            $ticket->update(['sla_alerted_at' => now()]);
+
+            // Alerta al cliente (o al ATC que lo creó)
+            // Aquí notificamos al ATC para seguimiento
+            if ($ticket->atc) {
+                $ticket->atc->notify(new SlaWarningNotification($ticket));
+            }
+
+            Log::info("SLA Alert disparada para el ticket {$ticket->code}");
+            
+            // Broadcast del evento en tiempo real (Reverb)
+            event(new \App\Events\SlaAlertTriggered($ticket));
+        }
+    }
+}
