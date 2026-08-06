@@ -97,4 +97,22 @@ class ExchangeTicketController extends ApiController
             return $this->error($e->getMessage(), 422);
         }
     }
+    /**
+     * Actualizar datos del Ticket (Ej. Tasa de cambio por el Admin)
+     */
+    public function update(\Illuminate\Http\Request $request, ExchangeTicket $exchangeTicket): JsonResponse
+    {
+        $data = $request->validate([
+            'exchange_rate' => 'nullable|numeric|min:0.000001',
+            'amount_to_deliver' => 'nullable|numeric|min:0',
+            'external_admin_id' => 'nullable|integer|exists:users,id',
+            'provider_id' => 'nullable|integer|exists:users,id',
+            'courier_id' => 'nullable|integer|exists:users,id',
+        ]);
+        $exchangeTicket->update($data);
+        return $this->success(
+            $exchangeTicket->fresh()->load('client', 'atc'), 
+            'Ticket actualizado exitosamente'
+        );
+    }
 }
