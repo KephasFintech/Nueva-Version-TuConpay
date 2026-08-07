@@ -51,7 +51,11 @@ class ExchangeTicketController extends ApiController
         $data['status'] = TicketStatus::DRAFT->value;
         $data['expires_at'] = ExchangeTicket::calculateExpiresAt();
 
-        $ticket = ExchangeTicket::create($data);
+        $ticket = new ExchangeTicket($data);
+        if ($ticket->exchange_rate !== null && !isset($data['amount_to_deliver'])) {
+            $ticket->amount_to_deliver = $ticket->calculateAmountToDeliver();
+        }
+        $ticket->save();
 
         // Registro inicial en auditoría
         $ticket->statusLogs()->create([
@@ -103,13 +107,19 @@ class ExchangeTicketController extends ApiController
     public function update(\Illuminate\Http\Request $request, ExchangeTicket $exchangeTicket): JsonResponse
     {
         $data = $request->validate([
+            'rate_type' => 'nullable|string|in:fixed,percentage',
             'exchange_rate' => 'nullable|numeric|min:0.000001',
             'amount_to_deliver' => 'nullable|numeric|min:0',
             'external_admin_id' => 'nullable|integer|exists:users,id',
             'provider_id' => 'nullable|integer|exists:users,id',
             'courier_id' => 'nullable|integer|exists:users,id',
         ]);
-        $exchangeTicket->update($data);
+        
+        $exchangeTicket->fill($data);
+        if ($exchangeTicket->isDirty(['exchange_rate', 'rate_type']) && !isset($data['amount_to_deliver'])) {
+            $exchangeTicket->amount_to_deliver = $exchangeTicket->calculateAmountToDeliver();
+        }
+        $exchangeTicket->save();
         return $this->success(
             $exchangeTicket->fresh()->load('client', 'atc'), 
             'Ticket actualizado exitosamente'

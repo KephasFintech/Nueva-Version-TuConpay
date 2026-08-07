@@ -24,6 +24,7 @@ class StoreExchangeTicketRequest extends FormRequest
             'currency_from'     => ['required', 'string', 'in:' . implode(',', $currencies)],
             'currency_to'       => ['required', 'string', 'in:' . implode(',', $currencies)],
             'amount_requested'  => ['required', 'numeric', 'min:1'],
+            'rate_type'         => ['nullable', 'string', 'in:fixed,percentage'],
             'exchange_rate'     => ['nullable', 'numeric', 'min:0.000001'],
             'amount_to_deliver' => ['nullable', 'numeric', 'min:0'],
             'notes'             => ['nullable', 'string'],

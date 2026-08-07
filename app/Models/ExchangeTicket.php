@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\RateType;
 use App\Enums\TicketStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -27,6 +28,7 @@ class ExchangeTicket extends Model
         'currency_from',
         'currency_to',
         'amount_requested',
+        'rate_type',
         'exchange_rate',
         'amount_to_deliver',
         'status',
@@ -45,6 +47,7 @@ class ExchangeTicket extends Model
     {
         return [
             'status'          => TicketStatus::class,
+            'rate_type'       => RateType::class,
             'expires_at'      => 'datetime',
             'sla_alerted_at'  => 'datetime',
             'closed_at'       => 'datetime',
@@ -173,5 +176,23 @@ class ExchangeTicket extends Model
     {
         $minutes = config('exchange.sla.duration_minutes', 90);
         return now()->addMinutes($minutes);
+    }
+
+    /**
+     * Calcula el monto a entregar basado en el tipo de tasa (rate_type) y la tasa (exchange_rate).
+     */
+    public function calculateAmountToDeliver(): ?float
+    {
+        if ($this->exchange_rate === null || $this->amount_requested === null) {
+            return null;
+        }
+
+        $type = $this->rate_type ?? RateType::FIXED;
+
+        if ($type === RateType::PERCENTAGE) {
+            return round((float) $this->amount_requested * ((float) $this->exchange_rate / 100), 6);
+        }
+
+        return round((float) $this->amount_requested * (float) $this->exchange_rate, 6);
     }
 }
