@@ -19,12 +19,19 @@ class TicketStateMachine
      *
      * @throws InvalidStateTransitionException
      */
-    public function transition(ExchangeTicket $ticket, TicketStatus $newStatus, ?string $notes = null): ExchangeTicket
+    public function transition(ExchangeTicket $ticket, TicketStatus $newStatus, ?string $notes = null, ?string $providedOtp = null): ExchangeTicket
     {
         $currentStatus = $ticket->status;
 
         if (! $currentStatus->canTransitionTo($newStatus)) {
             throw new InvalidStateTransitionException($currentStatus, $newStatus);
+        }
+
+        // PRD Requirement: OTP Validation before DELIVERED
+        if ($newStatus === TicketStatus::DELIVERED && $ticket->delivery_otp) {
+            if ($providedOtp !== $ticket->delivery_otp) {
+                throw new \InvalidArgumentException('El OTP proporcionado es inválido para la entrega.');
+            }
         }
 
         $ticket->status = $newStatus;

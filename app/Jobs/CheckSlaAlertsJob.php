@@ -19,6 +19,7 @@ class CheckSlaAlertsJob implements ShouldQueue
 
     public function handle(SlaService $slaService): void
     {
+        // 1. SLA Cliente (90 min) - Alerta Temprana
         $tickets = ExchangeTicket::awaitingSlaAlert()->get();
 
         foreach ($tickets as $ticket) {
@@ -27,7 +28,7 @@ class CheckSlaAlertsJob implements ShouldQueue
 
             // Alerta al cliente (o al ATC que lo creó)
             // Aquí notificamos al ATC para seguimiento
-            if ($ticket->atc) {
+            if (config('exchange.notifications_enabled', false) && $ticket->atc) {
                 $ticket->atc->notify(new SlaWarningNotification($ticket));
             }
 
@@ -35,6 +36,20 @@ class CheckSlaAlertsJob implements ShouldQueue
             
             // Broadcast del evento en tiempo real (Reverb)
             event(new \App\Events\SlaAlertTriggered($ticket));
+        }
+
+        // 2. SLA Global (180 min) - Overdue Alert
+        $globalOverdueTickets = ExchangeTicket::globalOverdue()->get();
+        foreach ($globalOverdueTickets as $ticket) {
+            $meta = $ticket->metadata ?? [];
+            if (isset($meta['global_alerted_at'])) continue;
+
+            $meta['global_alerted_at'] = now()->toDateTimeString();
+            $ticket->update(['metadata' => $meta]);
+
+            Log::critical("Global SLA (180 min) Overdue disparado para el ticket {$ticket->code}");
+            
+            // Nota PRD: Aquí se alertaría a la sala de operaciones (sin cancelar el ticket).
         }
     }
 }

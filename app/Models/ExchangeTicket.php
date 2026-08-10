@@ -31,8 +31,12 @@ class ExchangeTicket extends Model
         'rate_type',
         'exchange_rate',
         'amount_to_deliver',
+        'bridge_asset',
+        'bridge_amount',
         'status',
+        'delivery_otp',
         'expires_at',
+        'global_expires_at',
         'sla_alerted_at',
         'closed_at',
         'gnb',
@@ -49,9 +53,11 @@ class ExchangeTicket extends Model
             'status'          => TicketStatus::class,
             'rate_type'       => RateType::class,
             'expires_at'      => 'datetime',
+            'global_expires_at' => 'datetime',
             'sla_alerted_at'  => 'datetime',
             'closed_at'       => 'datetime',
             'amount_requested' => 'decimal:6',
+            'bridge_amount'   => 'decimal:6',
             'exchange_rate'   => 'decimal:6',
             'amount_to_deliver' => 'decimal:6',
             'gnb'             => 'decimal:6',
@@ -147,6 +153,16 @@ class ExchangeTicket extends Model
             ])
             ->where('expires_at', '>', now())
             ->where('expires_at', '<=', now()->addMinutes($threshold));
+    }
+
+    public function scopeGlobalOverdue($query)
+    {
+        return $query->where('global_expires_at', '<', now())
+            ->whereNotIn('status', [
+                TicketStatus::CLOSED->value,
+                TicketStatus::CANCELLED->value,
+                TicketStatus::CANCELLED_BY_TIMEOUT->value,
+            ]);
     }
 
     public function scopeByStatus($query, TicketStatus|string $status)

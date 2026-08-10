@@ -83,34 +83,47 @@ class ProfitCalculatorService
 
         $gnb = $this->calculateGnb($ticket);
 
+        // Control de redondeo: asegurar que sume el 100% de GNB exactamente
+        $brokerAmount = $this->applyPercentage($gnb, $this->distributionPercentages['broker']);
+        $investorAmount = $this->applyPercentage($gnb, $this->distributionPercentages['investor']);
+        $teamAmount = $this->applyPercentage($gnb, $this->distributionPercentages['team']);
+        
+        $officePercentage = $this->distributionPercentages['office'];
+        $officeAmount = $this->applyPercentage($gnb, $officePercentage);
+
+        $sum = $brokerAmount + $investorAmount + $teamAmount + $officeAmount;
+        if (round($sum, 6) !== round($gnb, 6)) {
+            $officeAmount += ($gnb - $sum);
+        }
+
         $distribution = [
-            'atc' => [
-                'role'       => UserRole::ATC->value,
-                'label'      => UserRole::ATC->label(),
-                'user_id'    => $ticket->atc_user_id,
-                'percentage' => $this->distributionPercentages['atc'],
-                'amount'     => $this->applyPercentage($gnb, $this->distributionPercentages['atc']),
-            ],
             'broker' => [
                 'role'       => UserRole::BROKER->value,
                 'label'      => UserRole::BROKER->label(),
                 'user_id'    => $ticket->broker_id,
                 'percentage' => $this->distributionPercentages['broker'],
-                'amount'     => $this->applyPercentage($gnb, $this->distributionPercentages['broker']),
+                'amount'     => $brokerAmount,
             ],
-            'provider' => [
-                'role'       => UserRole::PROVIDER->value,
-                'label'      => UserRole::PROVIDER->label(),
-                'user_id'    => $ticket->provider_id,
-                'percentage' => $this->distributionPercentages['provider'],
-                'amount'     => $this->applyPercentage($gnb, $this->distributionPercentages['provider']),
+            'investor' => [
+                'role'       => 'investor_fund',
+                'label'      => 'Fondo Inversionistas',
+                'user_id'    => null, // Fondo global
+                'percentage' => $this->distributionPercentages['investor'],
+                'amount'     => $investorAmount,
             ],
-            'external_admin' => [
-                'role'       => UserRole::EXTERNAL_ADMIN->value,
-                'label'      => UserRole::EXTERNAL_ADMIN->label(),
-                'user_id'    => $ticket->external_admin_id,
-                'percentage' => $this->distributionPercentages['external_admin'],
-                'amount'     => $this->applyPercentage($gnb, $this->distributionPercentages['external_admin']),
+            'team' => [
+                'role'       => 'team_fund',
+                'label'      => 'Fondo Equipo',
+                'user_id'    => null, // Fondo global
+                'percentage' => $this->distributionPercentages['team'],
+                'amount'     => $teamAmount,
+            ],
+            'office' => [
+                'role'       => 'office_fund',
+                'label'      => 'Utilidad Oficina',
+                'user_id'    => null, // Fondo global
+                'percentage' => $officePercentage,
+                'amount'     => $officeAmount,
             ],
         ];
 

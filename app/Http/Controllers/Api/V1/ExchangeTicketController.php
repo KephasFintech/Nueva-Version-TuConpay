@@ -92,13 +92,16 @@ class ExchangeTicketController extends ApiController
             $ticket = $this->stateMachine->transition(
                 $exchangeTicket, 
                 $newStatus, 
-                $request->input('notes')
+                $request->input('notes'),
+                $request->input('delivery_otp')
             );
 
             return $this->success($ticket, "Estado cambiado a {$newStatus->label()}");
             
         } catch (\App\Exceptions\InvalidStateTransitionException $e) {
             return $this->error($e->getMessage(), 422);
+        } catch (\InvalidArgumentException $e) {
+            return $this->error($e->getMessage(), 400);
         }
     }
     /**
@@ -113,6 +116,9 @@ class ExchangeTicketController extends ApiController
             'external_admin_id' => 'nullable|integer|exists:users,id',
             'provider_id' => 'nullable|integer|exists:users,id',
             'courier_id' => 'nullable|integer|exists:users,id',
+            'bridge_asset' => 'nullable|string|max:20',
+            'bridge_amount' => 'nullable|numeric|min:0',
+            'delivery_otp' => 'nullable|string|max:10',
         ]);
         
         $exchangeTicket->fill($data);

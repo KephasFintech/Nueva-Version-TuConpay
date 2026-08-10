@@ -18,6 +18,7 @@ class UpdateTicketStatusRequest extends FormRequest
         return [
             'status' => ['required', Rule::enum(TicketStatus::class)],
             'notes'  => ['nullable', 'string'],
+            'delivery_otp' => ['nullable', 'string', 'max:10'],
         ];
     }
 }

@@ -13,6 +13,7 @@ return [
     'sla' => [
         'duration_minutes'          => env('TICKET_SLA_MINUTES', 90),
         'alert_threshold_minutes'   => env('TICKET_SLA_ALERT_THRESHOLD_MINUTES', 30),
+        'global_duration_minutes'   => env('TICKET_SLA_GLOBAL_MINUTES', 180),
     ],
 
     /*
@@ -20,15 +21,15 @@ return [
     | Profit Distribution (Porcentajes sobre GNB)
     |--------------------------------------------------------------------------
     |
-    | Los porcentajes deben sumar 100. Cada clave corresponde a un rol.
+    | Los porcentajes deben sumar 100.
     | GNB = Monto entregado - Sum(costos registrados)
     |
     */
     'distribution' => [
-        'atc'            => env('DIST_ATC_PERCENT', 25),    // Agente de Taquilla / Oficina
-        'broker'         => env('DIST_BROKER_PERCENT', 10),
-        'provider'       => env('DIST_PROVIDER_PERCENT', 30),
-        'external_admin' => env('DIST_ADMIN_PERCENT', 35),  // A1
+        'broker'         => env('DIST_BROKER_PERCENT', 25),
+        'investor'       => env('DIST_INVESTOR_PERCENT', 10),
+        'team'           => env('DIST_TEAM_PERCENT', 30),
+        'office'         => env('DIST_OFFICE_PERCENT', 35),
     ],
 
     /*
