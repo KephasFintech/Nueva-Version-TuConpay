@@ -7,11 +7,13 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Password;
 
+use App\Enums\PermissionEnum;
+
 class StoreUserRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return true; // La autorización se maneja en el Controller/Policy
+        return $this->user() && $this->user()->can(PermissionEnum::USER_MANAGE->value);
     }
 
     /**

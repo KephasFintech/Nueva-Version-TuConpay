@@ -6,11 +6,14 @@ enum UserRole: string
 {
     case SUPER_ADMIN    = 'super_admin';
     case ATC            = 'atc';            // Agente de Taquilla / Cambios
-    case BROKER         = 'broker';
+    case ADMIN          = 'admin';          // Administración
+    case DIRECTION      = 'direction';      // Dirección
+    case DATA_ANALYST   = 'data_analyst';   // Registro / Análisis de Datos
+    case BROKER         = 'broker';         // Corredor / Intermediario
     case EXTERNAL_ADMIN = 'external_admin'; // Administrador Externo (A1)
     case PROVIDER       = 'provider';       // Proveedor (P2/P3)
     case COURIER        = 'courier';        // Motorizado / Logística
-    case CLIENT         = 'client';
+    case CLIENT         = 'client';         // Cliente
 
     /**
      * Etiqueta legible.
@@ -20,6 +23,9 @@ enum UserRole: string
         return match ($this) {
             self::SUPER_ADMIN    => 'Super Administrador',
             self::ATC            => 'Agente de Taquilla',
+            self::ADMIN          => 'Administración',
+            self::DIRECTION      => 'Dirección',
+            self::DATA_ANALYST   => 'Analista de Datos',
             self::BROKER         => 'Broker',
             self::EXTERNAL_ADMIN => 'Administrador Externo',
             self::PROVIDER       => 'Proveedor',
@@ -39,7 +45,7 @@ enum UserRole: string
     }
 
     /**
-     * Roles que pueden gestionar tickets (operativos).
+     * Roles que pueden gestionar tickets (operativos principales).
      *
      * @return array<string>
      */
@@ -48,19 +54,20 @@ enum UserRole: string
         return [
             self::SUPER_ADMIN->value,
             self::ATC->value,
-            self::BROKER->value,
+            self::ADMIN->value,
+            self::DIRECTION->value,
+            self::DATA_ANALYST->value,
         ];
     }
 
     /**
-     * Roles agentes (participan en la distribución financiera).
+     * Roles agentes (participan en la distribución financiera y comisiones).
      *
      * @return array<string>
      */
     public static function financialAgentRoles(): array
     {
         return [
-            self::ATC->value,
             self::BROKER->value,
             self::EXTERNAL_ADMIN->value,
             self::PROVIDER->value,

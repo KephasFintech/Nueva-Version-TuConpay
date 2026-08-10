@@ -211,4 +211,27 @@ class ExchangeTicket extends Model
 
         return round((float) $this->amount_requested * (float) $this->exchange_rate, 6);
     }
+
+    /**
+     * Verifica que los agentes requeridos estén asignados al ticket.
+     * Si es un flujo externo (Dirección), requiere Admin A1 y Proveedor P2.
+     * Si es un flujo interno (Administración), no los requiere.
+     * En ambos casos, se requiere Motorizado y Broker.
+     */
+    public function hasRequiredAgentsAssigned(): bool
+    {
+        // Broker y Motorizado siempre son obligatorios operativamente
+        if ($this->broker_id === null || $this->courier_id === null) {
+            return false;
+        }
+
+        // Si se asignó un Administrador Externo (A1), entonces es un flujo de capital externo (Dirección).
+        // En este caso, también es obligatorio el Proveedor (P2/P3).
+        if ($this->external_admin_id !== null) {
+            return $this->provider_id !== null;
+        }
+
+        // Si no hay Admin Externo, es flujo interno (capital propio de la empresa).
+        return true;
+    }
 }

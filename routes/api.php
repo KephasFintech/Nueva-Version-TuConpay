@@ -20,20 +20,32 @@ Route::prefix('v1')->group(function () {
     // Operaciones protegidas por token
     Route::middleware('auth:api')->group(function () {
         // Usuarios & Agentes
-        Route::apiResource('users', UserController::class);
+        Route::middleware(['permission:user:manage'])->group(function () {
+            Route::apiResource('users', UserController::class);
+        });
 
         // Tickets de Cambio
-        Route::apiResource('exchange-tickets', \App\Http\Controllers\Api\V1\ExchangeTicketController::class)->except(['destroy']);
+        Route::get('exchange-tickets', [\App\Http\Controllers\Api\V1\ExchangeTicketController::class, 'index']);
+        Route::post('exchange-tickets', [\App\Http\Controllers\Api\V1\ExchangeTicketController::class, 'store'])->middleware('permission:ticket:create');
+        Route::get('exchange-tickets/{exchange_ticket}', [\App\Http\Controllers\Api\V1\ExchangeTicketController::class, 'show'])->can('view', 'exchange_ticket');
+        Route::put('exchange-tickets/{exchange_ticket}', [\App\Http\Controllers\Api\V1\ExchangeTicketController::class, 'update']);
+        
         Route::put('exchange-tickets/{exchange_ticket}/status', [\App\Http\Controllers\Api\V1\ExchangeTicketController::class, 'updateStatus']);
-        Route::post('exchange-tickets/{exchange_ticket}/receipt', [\App\Http\Controllers\Api\V1\ReceiptController::class, 'store']);
+        Route::post('exchange-tickets/{exchange_ticket}/receipt', [\App\Http\Controllers\Api\V1\ReceiptController::class, 'store'])
+             ->middleware('permission:ticket:upload-proof');
         Route::get('exchange-tickets/{exchange_ticket}/sla', [\App\Http\Controllers\Api\V1\SlaController::class, 'show']);
 
         // Finanzas
         Route::post('exchange-tickets/{exchange_ticket}/costs', [\App\Http\Controllers\Api\V1\FinanceController::class, 'storeCost']);
-        Route::post('exchange-tickets/{exchange_ticket}/close', [\App\Http\Controllers\Api\V1\FinanceController::class, 'close']);
+        Route::post('exchange-tickets/{exchange_ticket}/close', [\App\Http\Controllers\Api\V1\FinanceController::class, 'close'])
+             ->middleware('four_agents')
+             ->can('settle', 'exchange_ticket');
+             
         Route::get('exchange-tickets/{exchange_ticket}/distribution', [\App\Http\Controllers\Api\V1\FinanceController::class, 'showDistribution']);
+        
         // Reportes
-        Route::get('reports/profit', [\App\Http\Controllers\Api\V1\ReportController::class, 'profit']);
+        Route::get('reports/profit', [\App\Http\Controllers\Api\V1\ReportController::class, 'profit'])
+             ->middleware('permission:ticket:audit-agents');
 
         // Notificaciones
         Route::get('notifications', [\App\Http\Controllers\Api\V1\NotificationController::class, 'index']);

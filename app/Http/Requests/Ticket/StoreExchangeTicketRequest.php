@@ -4,11 +4,13 @@ namespace App\Http\Requests\Ticket;
 
 use Illuminate\Foundation\Http\FormRequest;
 
+use App\Enums\PermissionEnum;
+
 class StoreExchangeTicketRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return true;
+        return $this->user() && $this->user()->can(PermissionEnum::TICKET_CREATE->value);
     }
 
     public function rules(): array
