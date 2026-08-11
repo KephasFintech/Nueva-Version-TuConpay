@@ -21,12 +21,22 @@ use Illuminate\Support\Facades\DB;
  */
 class ProfitCalculatorService
 {
+    private readonly array $distributionPercentages;
+
     /**
-     * @param  array<string, int>  $distributionPercentages  ['atc' => 25, 'broker' => 10, ...]
+     * @param  array<string, int>  $distributionPercentages
      */
-    public function __construct(
-        private readonly array $distributionPercentages
-    ) {}
+    public function __construct(array $distributionPercentages = [])
+    {
+        $this->distributionPercentages = empty($distributionPercentages)
+            ? config('exchange.distribution', [
+                'broker'   => 10,
+                'investor' => 30,
+                'team'     => 25,
+                'office'   => 35,
+            ])
+            : $distributionPercentages;
+    }
 
     /**
      * Verifica que el ticket tiene todos los agentes requeridos antes de calcular.
