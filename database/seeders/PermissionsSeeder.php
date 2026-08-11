@@ -27,6 +27,7 @@ class PermissionsSeeder extends Seeder
             UserRole::SUPER_ADMIN->value => PermissionEnum::values(), // Super Admin gets all permissions
             
             UserRole::ATC->value => [
+                PermissionEnum::CLIENT_CREATE->value,
                 PermissionEnum::TICKET_CREATE->value,
                 PermissionEnum::TICKET_SEND_TO_CLIENT->value,
                 PermissionEnum::TICKET_UPLOAD_AFFIDAVIT->value,

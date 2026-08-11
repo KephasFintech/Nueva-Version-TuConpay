@@ -49,5 +49,35 @@ class RolesAndAdminSeeder extends Seeder
         if (!$atc->hasRole(UserRole::ATC->value)) {
             $atc->assignRole(UserRole::ATC->value);
         }
+
+        // Create a test Admin
+        $admin = User::firstOrCreate(
+            ['email' => 'admin-op@tuconpay.com'],
+            [
+                'name'      => 'Administrador Demo',
+                'password'  => Hash::make('password123'),
+                'phone'     => '+1234567890',
+                'is_active' => true,
+            ]
+        );
+
+        if (!$admin->hasRole(UserRole::ADMIN->value)) {
+            $admin->assignRole(UserRole::ADMIN->value);
+        }
+
+        // Create a test Data Analyst
+        $analyst = User::firstOrCreate(
+            ['email' => 'analista@tuconpay.com'],
+            [
+                'name'      => 'Analista de Datos Demo',
+                'password'  => Hash::make('password123'),
+                'phone'     => '+1234567890',
+                'is_active' => true,
+            ]
+        );
+
+        if (!$analyst->hasRole(UserRole::DATA_ANALYST->value)) {
+            $analyst->assignRole(UserRole::DATA_ANALYST->value);
+        }
     }
 }

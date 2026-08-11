@@ -21,8 +21,12 @@ Route::prefix('v1')->group(function () {
     Route::middleware('auth:api')->group(function () {
         // Usuarios & Agentes
         Route::middleware(['permission:user:manage'])->group(function () {
-            Route::apiResource('users', UserController::class);
+            Route::apiResource('users', UserController::class)->except(['store']);
         });
+
+        // Creación de usuario: accesible por admins (user:manage) y por ATC (client:create)
+        Route::post('users', [UserController::class, 'store'])
+             ->middleware(['permission:user:manage|client:create']);
 
         // Tickets de Cambio
         Route::get('exchange-tickets', [\App\Http\Controllers\Api\V1\ExchangeTicketController::class, 'index']);

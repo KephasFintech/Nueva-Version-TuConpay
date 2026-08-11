@@ -23,7 +23,8 @@ enum PermissionEnum: string
     case CASH_CLOSE_SHIFT = 'cash:close-shift';                     // Cierre de Caja (Admin/Data Analyst)
     
     // Módulo de Administración de Usuarios
-    case USER_MANAGE = 'user:manage';                               // Super Admin / Dirección
+    case USER_MANAGE    = 'user:manage';                            // Super Admin / Dirección
+    case CLIENT_CREATE  = 'client:create';                          // Crear clientes (ATC)
 
     /**
      * Retorna todos los valores como array de strings.
