@@ -65,6 +65,7 @@ class PermissionsSeeder extends Seeder
             UserRole::CLIENT->value => [
                 PermissionEnum::TICKET_UPLOAD_AFFIDAVIT->value,
                 PermissionEnum::TICKET_UPLOAD_PROOF->value,
+                PermissionEnum::CLIENT_VIEW->value,
             ],
             
             // Broker, External Admin, and Provider primarily have read access 

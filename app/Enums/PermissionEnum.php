@@ -25,6 +25,7 @@ enum PermissionEnum: string
     // Módulo de Administración de Usuarios
     case USER_MANAGE    = 'user:manage';                            // Super Admin / Dirección
     case CLIENT_CREATE  = 'client:create';                          // Crear clientes (ATC)
+    case CLIENT_VIEW    = 'client:view';                            // Ver lista de clientes
 
     /**
      * Retorna todos los valores como array de strings.
