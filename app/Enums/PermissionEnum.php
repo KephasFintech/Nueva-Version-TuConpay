@@ -28,6 +28,12 @@ enum PermissionEnum: string
     case CLIENT_VIEW    = 'client:view';                            // Ver lista de clientes
     case COURIER_CREATE = 'courier:create';                         // Crear motorizados
     case COURIER_VIEW   = 'courier:view';                           // Ver lista de motorizados
+    case BROKER_CREATE  = 'broker:create';                          // Crear brokers
+    case BROKER_VIEW    = 'broker:view';                            // Ver lista de brokers
+    case EXTERNAL_ADMIN_CREATE = 'external-admin:create';           // Crear admin externo
+    case EXTERNAL_ADMIN_VIEW   = 'external-admin:view';             // Ver admin externo
+    case PROVIDER_CREATE = 'provider:create';                       // Crear proveedores
+    case PROVIDER_VIEW   = 'provider:view';                         // Ver lista de proveedores
 
     /**
      * Retorna todos los valores como array de strings.

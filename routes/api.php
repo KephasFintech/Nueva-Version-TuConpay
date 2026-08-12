@@ -20,14 +20,14 @@ Route::prefix('v1')->group(function () {
     // Operaciones protegidas por token
     Route::middleware('auth:api')->group(function () {
         // Usuarios & Agentes
-        Route::get('users', [UserController::class, 'index'])->middleware(['permission:user:manage|client:view|courier:view']);
+        Route::get('users', [UserController::class, 'index'])->middleware(['permission:user:manage|client:view|courier:view|broker:view|external-admin:view|provider:view']);
         Route::middleware(['permission:user:manage'])->group(function () {
             Route::apiResource('users', UserController::class)->except(['store', 'index']);
         });
 
         // Creación de usuario: accesible por admins (user:manage) y por ATC (client:create)
         Route::post('users', [UserController::class, 'store'])
-             ->middleware(['permission:user:manage|client:create|courier:create']);
+             ->middleware(['permission:user:manage|client:create|courier:create|broker:create|external-admin:create|provider:create']);
 
         // Tickets de Cambio
         Route::get('exchange-tickets', [\App\Http\Controllers\Api\V1\ExchangeTicketController::class, 'index']);

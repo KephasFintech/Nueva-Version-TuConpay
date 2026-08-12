@@ -46,6 +46,12 @@ class PermissionsSeeder extends Seeder
                 PermissionEnum::TICKET_UPLOAD_PROOF->value,
                 PermissionEnum::COURIER_CREATE->value,
                 PermissionEnum::COURIER_VIEW->value,
+                PermissionEnum::BROKER_CREATE->value,
+                PermissionEnum::BROKER_VIEW->value,
+                PermissionEnum::EXTERNAL_ADMIN_CREATE->value,
+                PermissionEnum::EXTERNAL_ADMIN_VIEW->value,
+                PermissionEnum::PROVIDER_CREATE->value,
+                PermissionEnum::PROVIDER_VIEW->value,
             ],
 
             UserRole::DIRECTION->value => [
@@ -58,6 +64,12 @@ class PermissionsSeeder extends Seeder
                 PermissionEnum::COURIER_CREATE->value,
                 PermissionEnum::TICKET_DISPATCH_COURIER->value,
                 PermissionEnum::COURIER_VIEW->value,
+                PermissionEnum::BROKER_CREATE->value,
+                PermissionEnum::BROKER_VIEW->value,
+                PermissionEnum::EXTERNAL_ADMIN_CREATE->value,
+                PermissionEnum::EXTERNAL_ADMIN_VIEW->value,
+                PermissionEnum::PROVIDER_CREATE->value,
+                PermissionEnum::PROVIDER_VIEW->value,
             ],
 
             UserRole::DATA_ANALYST->value => [
