@@ -26,6 +26,8 @@ enum PermissionEnum: string
     case USER_MANAGE    = 'user:manage';                            // Super Admin / Dirección
     case CLIENT_CREATE  = 'client:create';                          // Crear clientes (ATC)
     case CLIENT_VIEW    = 'client:view';                            // Ver lista de clientes
+    case COURIER_CREATE = 'courier:create';                         // Crear motorizados
+    case COURIER_VIEW   = 'courier:view';                           // Ver lista de motorizados
 
     /**
      * Retorna todos los valores como array de strings.

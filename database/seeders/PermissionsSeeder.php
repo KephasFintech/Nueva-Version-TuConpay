@@ -43,6 +43,9 @@ class PermissionsSeeder extends Seeder
                 PermissionEnum::TICKET_DISPATCH_COURIER->value,
                 PermissionEnum::TICKET_CONFIRM_DELIVERY->value,
                 PermissionEnum::CASH_CLOSE_SHIFT->value,
+                PermissionEnum::TICKET_UPLOAD_PROOF->value,
+                PermissionEnum::COURIER_CREATE->value,
+                PermissionEnum::COURIER_VIEW->value,
             ],
 
             UserRole::DIRECTION->value => [
@@ -51,6 +54,10 @@ class PermissionsSeeder extends Seeder
                 PermissionEnum::TICKET_PROCESS_BRIDGE->value,
                 PermissionEnum::TICKET_CONFIRM_DELIVERY->value,
                 PermissionEnum::USER_MANAGE->value,
+                PermissionEnum::TICKET_UPLOAD_PROOF->value,
+                PermissionEnum::COURIER_CREATE->value,
+                PermissionEnum::TICKET_DISPATCH_COURIER->value,
+                PermissionEnum::COURIER_VIEW->value,
             ],
 
             UserRole::DATA_ANALYST->value => [
