@@ -25,7 +25,7 @@ class PermissionsSeeder extends Seeder
         // 2. Define permission mapping
         $rolePermissions = [
             UserRole::SUPER_ADMIN->value => PermissionEnum::values(), // Super Admin gets all permissions
-            
+
             UserRole::ATC->value => [
                 PermissionEnum::CLIENT_CREATE->value,
                 PermissionEnum::TICKET_CREATE->value,
@@ -33,8 +33,9 @@ class PermissionsSeeder extends Seeder
                 PermissionEnum::TICKET_UPLOAD_AFFIDAVIT->value,
                 PermissionEnum::TICKET_UPLOAD_PROOF->value,
                 PermissionEnum::TICKET_CONFIRM_DELIVERY->value,
+                PermissionEnum::CLIENT_VIEW->value,
             ],
-            
+
             UserRole::ADMIN->value => [
                 PermissionEnum::TICKET_ASSIGN_RATE_INTERNAL->value,
                 PermissionEnum::TICKET_VERIFY_PAYMENT_INTERNAL->value,
@@ -43,7 +44,7 @@ class PermissionsSeeder extends Seeder
                 PermissionEnum::TICKET_CONFIRM_DELIVERY->value,
                 PermissionEnum::CASH_CLOSE_SHIFT->value,
             ],
-            
+
             UserRole::DIRECTION->value => [
                 PermissionEnum::TICKET_ASSIGN_RATE_EXTERNAL->value,
                 PermissionEnum::TICKET_VERIFY_PAYMENT_EXTERNAL->value,
@@ -51,23 +52,22 @@ class PermissionsSeeder extends Seeder
                 PermissionEnum::TICKET_CONFIRM_DELIVERY->value,
                 PermissionEnum::USER_MANAGE->value,
             ],
-            
+
             UserRole::DATA_ANALYST->value => [
                 PermissionEnum::TICKET_AUDIT_AGENTS->value,
                 PermissionEnum::TICKET_SETTLE->value,
                 PermissionEnum::CASH_CLOSE_SHIFT->value,
             ],
-            
+
             UserRole::COURIER->value => [
                 // El motorizado no tiene vista en el sistema por ahora, la admin se encarga
             ],
-            
+
             UserRole::CLIENT->value => [
                 PermissionEnum::TICKET_UPLOAD_AFFIDAVIT->value,
                 PermissionEnum::TICKET_UPLOAD_PROOF->value,
-                PermissionEnum::CLIENT_VIEW->value,
             ],
-            
+
             // Broker, External Admin, and Provider primarily have read access 
             // handled by Policies, so no specific operative permissions are assigned here.
             UserRole::BROKER->value         => [],
@@ -78,7 +78,7 @@ class PermissionsSeeder extends Seeder
         // 3. Create roles and assign permissions
         foreach ($rolePermissions as $roleName => $permissions) {
             $role = Role::firstOrCreate(['name' => $roleName, 'guard_name' => 'api']);
-            
+
             if (!empty($permissions)) {
                 $role->syncPermissions($permissions);
             }
