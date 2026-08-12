@@ -20,8 +20,9 @@ Route::prefix('v1')->group(function () {
     // Operaciones protegidas por token
     Route::middleware('auth:api')->group(function () {
         // Usuarios & Agentes
+        Route::get('users', [UserController::class, 'index'])->middleware(['permission:user:manage|client:view']);
         Route::middleware(['permission:user:manage'])->group(function () {
-            Route::apiResource('users', UserController::class)->except(['store']);
+            Route::apiResource('users', UserController::class)->except(['store', 'index']);
         });
 
         // Creación de usuario: accesible por admins (user:manage) y por ATC (client:create)
