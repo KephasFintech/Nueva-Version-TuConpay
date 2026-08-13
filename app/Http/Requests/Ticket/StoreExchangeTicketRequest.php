@@ -5,6 +5,7 @@ namespace App\Http\Requests\Ticket;
 use Illuminate\Foundation\Http\FormRequest;
 
 use App\Enums\PermissionEnum;
+use App\Enums\UserRole;
 
 class StoreExchangeTicketRequest extends FormRequest
 {
@@ -13,11 +14,22 @@ class StoreExchangeTicketRequest extends FormRequest
         return $this->user() && $this->user()->can(PermissionEnum::TICKET_CREATE->value);
     }
 
+    protected function prepareForValidation(): void
+    {
+        $user = $this->user();
+        if ($user && $user->hasSystemRole(UserRole::ADMIN)) {
+            $this->merge([
+                'external_admin_id' => $user->id,
+            ]);
+        }
+    }
+
     public function rules(): array
     {
         $currencies = config('exchange.currencies', []);
+        $user = $this->user();
 
-        return [
+        $rules = [
             'client_id'         => ['required', 'exists:users,id'],
             'broker_id'         => ['nullable', 'exists:users,id'],
             'external_admin_id' => ['nullable', 'exists:users,id'],
@@ -31,5 +43,11 @@ class StoreExchangeTicketRequest extends FormRequest
             'amount_to_deliver' => ['nullable', 'numeric', 'min:0'],
             'notes'             => ['nullable', 'string'],
         ];
+
+        if ($user && $user->hasSystemRole(UserRole::DIRECTION)) {
+            $rules['external_admin_id'] = ['required', 'exists:users,id'];
+        }
+
+        return $rules;
     }
 }

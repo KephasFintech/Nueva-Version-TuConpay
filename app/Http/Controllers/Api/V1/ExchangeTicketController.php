@@ -109,7 +109,14 @@ class ExchangeTicketController extends ApiController
      */
     public function update(\Illuminate\Http\Request $request, ExchangeTicket $exchangeTicket): JsonResponse
     {
-        $data = $request->validate([
+        $user = \Illuminate\Support\Facades\Auth::user();
+        if ($user && $user->hasSystemRole(\App\Enums\UserRole::ADMIN)) {
+            $request->merge([
+                'external_admin_id' => $user->id,
+            ]);
+        }
+
+        $rules = [
             'rate_type' => 'nullable|string|in:fixed,percentage',
             'exchange_rate' => 'nullable|numeric|min:0.000001',
             'amount_to_deliver' => 'nullable|numeric|min:0',
@@ -120,7 +127,13 @@ class ExchangeTicketController extends ApiController
             'bridge_asset' => 'nullable|string|max:20',
             'bridge_amount' => 'nullable|numeric|min:0',
             'delivery_otp' => 'nullable|string|max:10',
-        ]);
+        ];
+
+        if ($user && $user->hasSystemRole(\App\Enums\UserRole::DIRECTION)) {
+            $rules['external_admin_id'] = 'required|integer|exists:users,id';
+        }
+
+        $data = $request->validate($rules);
         
         $exchangeTicket->fill($data);
         if ($exchangeTicket->isDirty(['exchange_rate', 'rate_type']) && !isset($data['amount_to_deliver'])) {
