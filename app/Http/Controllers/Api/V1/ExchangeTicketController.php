@@ -111,7 +111,7 @@ class ExchangeTicketController extends ApiController
     {
         $user = \Illuminate\Support\Facades\Auth::user();
         if ($user && $user->hasSystemRole(\App\Enums\UserRole::ADMIN)
-            && !$request->filled('external_admin_id')) {
+            && empty($request->input('external_admin_id'))) {
             $request->merge([
                 'external_admin_id' => $user->id,
             ]);
