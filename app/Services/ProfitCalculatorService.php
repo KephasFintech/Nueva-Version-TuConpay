@@ -59,9 +59,7 @@ class ProfitCalculatorService
             $missing[] = UserRole::PROVIDER->label();
         }
 
-        if (! $ticket->external_admin_id) {
-            $missing[] = UserRole::EXTERNAL_ADMIN->label();
-        }
+        // El external_admin_id ya no es estrictamente obligatorio para todos los flujos.
 
         if (! empty($missing)) {
             throw new \RuntimeException(
