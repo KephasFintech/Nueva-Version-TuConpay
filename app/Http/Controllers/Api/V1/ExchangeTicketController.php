@@ -113,6 +113,7 @@ class ExchangeTicketController extends ApiController
             'rate_type' => 'nullable|string|in:fixed,percentage',
             'exchange_rate' => 'nullable|numeric|min:0.000001',
             'amount_to_deliver' => 'nullable|numeric|min:0',
+            'broker_id' => 'nullable|integer|exists:users,id',
             'external_admin_id' => 'nullable|integer|exists:users,id',
             'provider_id' => 'nullable|integer|exists:users,id',
             'courier_id' => 'nullable|integer|exists:users,id',

@@ -76,6 +76,10 @@ class PermissionsSeeder extends Seeder
                 PermissionEnum::TICKET_AUDIT_AGENTS->value,
                 PermissionEnum::TICKET_SETTLE->value,
                 PermissionEnum::CASH_CLOSE_SHIFT->value,
+                PermissionEnum::COURIER_VIEW->value,
+                PermissionEnum::BROKER_VIEW->value,
+                PermissionEnum::EXTERNAL_ADMIN_VIEW->value,
+                PermissionEnum::PROVIDER_VIEW->value,
             ],
 
             UserRole::COURIER->value => [
