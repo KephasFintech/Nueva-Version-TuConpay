@@ -110,7 +110,8 @@ class ExchangeTicketController extends ApiController
     public function update(\Illuminate\Http\Request $request, ExchangeTicket $exchangeTicket): JsonResponse
     {
         $user = \Illuminate\Support\Facades\Auth::user();
-        if ($user && $user->hasSystemRole(\App\Enums\UserRole::ADMIN)) {
+        if ($user && $user->hasSystemRole(\App\Enums\UserRole::ADMIN)
+            && !$request->filled('external_admin_id')) {
             $request->merge([
                 'external_admin_id' => $user->id,
             ]);
