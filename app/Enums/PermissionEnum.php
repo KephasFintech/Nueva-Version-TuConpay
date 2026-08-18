@@ -20,7 +20,17 @@ enum PermissionEnum: string
     // Módulo de Cierre Financiero
     case TICKET_AUDIT_AGENTS = 'ticket:audit-agents';               // Etapa 09 (Data Analyst)
     case TICKET_SETTLE = 'ticket:settle';                           // Etapa 09 (Data Analyst)
+    
+    // Módulo de Caja (Cash Register)
+    case CASH_OPEN_SHIFT = 'cash:open-shift';                       // Abrir caja
     case CASH_CLOSE_SHIFT = 'cash:close-shift';                     // Cierre de Caja (Admin/Data Analyst)
+    case CASH_VIEW = 'cash:view';                                   // Ver caja y movimientos
+    case CASH_REGISTER_MOVEMENT = 'cash:register-movement';         // Registrar movimiento manual
+    
+    // Módulo de Gastos de Empresa (Company Expenses)
+    case EXPENSE_CREATE = 'expense:create';                         // Crear gasto
+    case EXPENSE_APPROVE = 'expense:approve';                       // Aprobar gasto
+    case EXPENSE_VIEW = 'expense:view';                             // Ver gastos
     
     // Módulo de Administración de Usuarios
     case USER_MANAGE    = 'user:manage';                            // Super Admin / Dirección

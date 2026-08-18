@@ -48,6 +48,24 @@ Route::prefix('v1')->group(function () {
              
         Route::get('exchange-tickets/{exchange_ticket}/distribution', [\App\Http\Controllers\Api\V1\FinanceController::class, 'showDistribution']);
         
+        // Caja (Cash Registers)
+        Route::middleware('permission:cash:view')->group(function () {
+            Route::get('cash-registers', [\App\Http\Controllers\Api\V1\CashRegisterController::class, 'index']);
+            Route::get('cash-registers/{cash_register}', [\App\Http\Controllers\Api\V1\CashRegisterController::class, 'show']);
+            Route::get('cash-registers/{cash_register}/summary', [\App\Http\Controllers\Api\V1\CashRegisterController::class, 'summary']);
+        });
+        Route::post('cash-registers', [\App\Http\Controllers\Api\V1\CashRegisterController::class, 'store'])->middleware('permission:cash:open-shift');
+        Route::post('cash-registers/{cash_register}/close', [\App\Http\Controllers\Api\V1\CashRegisterController::class, 'close'])->middleware('permission:cash:close-shift');
+        Route::post('cash-registers/{cash_register}/movements', [\App\Http\Controllers\Api\V1\CashRegisterController::class, 'storeMovement'])->middleware('permission:cash:register-movement');
+
+        // Gastos de Empresa (Company Expenses)
+        Route::middleware('permission:expense:view')->group(function () {
+            Route::get('company-expenses', [\App\Http\Controllers\Api\V1\CompanyExpenseController::class, 'index']);
+            Route::get('company-expenses/{company_expense}', [\App\Http\Controllers\Api\V1\CompanyExpenseController::class, 'show']);
+        });
+        Route::post('company-expenses', [\App\Http\Controllers\Api\V1\CompanyExpenseController::class, 'store'])->middleware('permission:expense:create');
+        Route::post('company-expenses/{company_expense}/approve', [\App\Http\Controllers\Api\V1\CompanyExpenseController::class, 'approve'])->middleware('permission:expense:approve');
+        
         // Reportes
         Route::get('reports/profit', [\App\Http\Controllers\Api\V1\ReportController::class, 'profit'])
              ->middleware('permission:ticket:audit-agents');

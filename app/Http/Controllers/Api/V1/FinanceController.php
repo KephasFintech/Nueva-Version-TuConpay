@@ -4,6 +4,10 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Requests\Finance\StoreTicketCostRequest;
 use App\Models\ExchangeTicket;
+use App\Models\CashRegister;
+use App\Enums\CashRegisterStatus;
+use App\Enums\CashMovementType;
+use App\Enums\CashMovementSource;
 use App\Services\ProfitCalculatorService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
@@ -55,6 +59,20 @@ class FinanceController extends ApiController
                 \App\Enums\TicketStatus::CLOSED, 
                 'Cierre financiero automático'
             );
+
+            // Registrar ingreso automático en caja si hay una abierta
+            $openRegister = CashRegister::where('status', CashRegisterStatus::OPEN->value)->first();
+            if ($openRegister && $result['gnb'] > 0) {
+                $openRegister->movements()->create([
+                    'type' => CashMovementType::INCOME->value,
+                    'source' => CashMovementSource::TICKET->value,
+                    'reference_id' => $exchangeTicket->id,
+                    'amount' => $result['gnb'],
+                    'currency' => $openRegister->currency, // Usamos la moneda de la caja
+                    'description' => "Ingreso por GNB del ticket {$exchangeTicket->code}",
+                    'registered_by' => Auth::id() ?? 1,
+                ]);
+            }
 
             return $this->success($result, 'Ticket cerrado y distribución calculada exitosamente');
 
