@@ -11,9 +11,9 @@ return [
     |
     */
     'sla' => [
-        'duration_minutes'          => env('TICKET_SLA_MINUTES', 90),
-        'alert_threshold_minutes'   => env('TICKET_SLA_ALERT_THRESHOLD_MINUTES', 30),
-        'global_duration_minutes'   => env('TICKET_SLA_GLOBAL_MINUTES', 180),
+        'duration_minutes'          => (int) env('TICKET_SLA_MINUTES', 90),
+        'alert_threshold_minutes'   => (int) env('TICKET_SLA_ALERT_THRESHOLD_MINUTES', 30),
+        'global_duration_minutes'   => (int) env('TICKET_SLA_GLOBAL_MINUTES', 180),
     ],
 
     /*
@@ -26,10 +26,10 @@ return [
     |
     */
     'distribution' => [
-        'broker'         => env('DIST_BROKER_PERCENT', 25),
-        'investor'       => env('DIST_INVESTOR_PERCENT', 10),
-        'team'           => env('DIST_TEAM_PERCENT', 30),
-        'office'         => env('DIST_OFFICE_PERCENT', 35),
+        'broker'         => (int) env('DIST_BROKER_PERCENT', 25),
+        'investor'       => (int) env('DIST_INVESTOR_PERCENT', 10),
+        'team'           => (int) env('DIST_TEAM_PERCENT', 30),
+        'office'         => (int) env('DIST_OFFICE_PERCENT', 35),
     ],
 
     /*
