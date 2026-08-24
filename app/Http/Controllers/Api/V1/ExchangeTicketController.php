@@ -32,6 +32,40 @@ class ExchangeTicketController extends ApiController
         if ($request->filled('client_id')) {
             $query->where('client_id', $request->input('client_id'));
         }
+        
+        if ($request->filled('currency') && $request->input('currency') !== 'ALL') {
+            $query->where('currency_from', $request->input('currency'));
+        }
+
+        $dateFrom = $request->input('start_date') ?? $request->input('date_from');
+        $dateTo   = $request->input('end_date')   ?? $request->input('date_to');
+
+        if ($dateFrom) {
+            $query->where('created_at', '>=', \Illuminate\Support\Carbon::parse($dateFrom)->startOfDay());
+        }
+
+        if ($dateTo) {
+            $query->where('created_at', '<=', \Illuminate\Support\Carbon::parse($dateTo)->endOfDay());
+        }
+
+        if ($request->filled('closed_from')) {
+            $query->where('closed_at', '>=', \Illuminate\Support\Carbon::parse($request->input('closed_from'))->startOfDay());
+        }
+
+        if ($request->filled('closed_to')) {
+            $query->where('closed_at', '<=', \Illuminate\Support\Carbon::parse($request->input('closed_to'))->endOfDay());
+        }
+
+        if ($request->filled('agent_id')) {
+            $agentId = $request->input('agent_id');
+            $query->where(function ($q) use ($agentId) {
+                $q->where('atc_user_id', $agentId)
+                  ->orWhere('broker_id', $agentId)
+                  ->orWhere('provider_id', $agentId)
+                  ->orWhere('external_admin_id', $agentId)
+                  ->orWhere('courier_id', $agentId);
+            });
+        }
 
         // Ordenamiento
         $query->orderByDesc('created_at');

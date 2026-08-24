@@ -20,6 +20,9 @@ enum PermissionEnum: string
     // Módulo de Cierre Financiero
     case TICKET_AUDIT_AGENTS = 'ticket:audit-agents';               // Etapa 09 (Data Analyst)
     case TICKET_SETTLE = 'ticket:settle';                           // Etapa 09 (Data Analyst)
+
+    // Módulo de Reportes
+    case REPORT_VIEW = 'report:view';                               // Ver reportes (Analista, Admin, Dirección)
     
     // Módulo de Caja (Cash Register)
     case CASH_OPEN_SHIFT = 'cash:open-shift';                       // Abrir caja

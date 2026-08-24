@@ -67,8 +67,12 @@ Route::prefix('v1')->group(function () {
         Route::post('company-expenses/{company_expense}/approve', [\App\Http\Controllers\Api\V1\CompanyExpenseController::class, 'approve'])->middleware('permission:expense:approve');
         
         // Reportes
-        Route::get('reports/profit', [\App\Http\Controllers\Api\V1\ReportController::class, 'profit'])
-             ->middleware('permission:ticket:audit-agents');
+        Route::prefix('reports')->middleware('permission:report:view|ticket:audit-agents')->group(function () {
+            Route::get('profit', [\App\Http\Controllers\Api\V1\ReportController::class, 'profit']);
+            Route::get('timeseries', [\App\Http\Controllers\Api\V1\ReportController::class, 'timeseries']);
+            Route::get('agents', [\App\Http\Controllers\Api\V1\ReportController::class, 'agents']);
+            Route::get('export', [\App\Http\Controllers\Api\V1\ReportController::class, 'export']);
+        });
 
         // Notificaciones
         Route::get('notifications', [\App\Http\Controllers\Api\V1\NotificationController::class, 'index']);
