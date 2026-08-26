@@ -43,6 +43,11 @@ class TicketStateMachine
 
         $ticket->save();
 
+        // Si el ticket pasa a PAYMENT_RECEIVED en flujo interno -> EGRESO de caja
+        if ($newStatus === TicketStatus::PAYMENT_RECEIVED && $ticket->external_admin_id === null) {
+            $this->registerCashExpense($ticket);
+        }
+
         // Auditoría: registrar el cambio de estado
         $ticket->statusLogs()->create([
             'from_status' => $currentStatus->value,
@@ -71,5 +76,27 @@ class TicketStateMachine
     public function availableTransitions(ExchangeTicket $ticket): array
     {
         return $ticket->status->allowedTransitions();
+    }
+
+    /**
+     * Registra el egreso de la caja abierta si el ticket usa capital interno.
+     */
+    private function registerCashExpense(ExchangeTicket $ticket): void
+    {
+        $openRegister = \App\Models\CashRegister::where(
+            'status', \App\Enums\CashRegisterStatus::OPEN->value
+        )->first();
+
+        if ($openRegister && $ticket->amount_to_deliver > 0) {
+            $openRegister->movements()->create([
+                'type'          => \App\Enums\CashMovementType::EXPENSE->value,
+                'source'        => \App\Enums\CashMovementSource::TICKET->value,
+                'reference_id'  => $ticket->id,
+                'amount'        => $ticket->amount_to_deliver,
+                'currency'      => $openRegister->currency,
+                'description'   => "Desembolso por ticket interno {$ticket->code}",
+                'registered_by' => Auth::id(),
+            ]);
+        }
     }
 }
