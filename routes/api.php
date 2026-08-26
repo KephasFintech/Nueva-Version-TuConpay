@@ -3,13 +3,18 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\V1\Auth\AuthController;
 use App\Http\Controllers\Api\V1\UserController;
+use Illuminate\Support\Facades\Broadcast;
+
 
 Route::prefix('v1')->group(function () {
-    
+
+    // Rutas de broadcast protegidas por token
+    Broadcast::routes(['middleware' => ['auth:api']]);
+
     // Auth
     Route::prefix('auth')->group(function () {
         Route::post('login', [AuthController::class, 'login']);
-        
+
         Route::middleware('auth:api')->group(function () {
             Route::post('refresh', [AuthController::class, 'refresh']);
             Route::post('logout', [AuthController::class, 'logout']);
@@ -27,27 +32,27 @@ Route::prefix('v1')->group(function () {
 
         // Creación de usuario: accesible por admins (user:manage) y por ATC (client:create)
         Route::post('users', [UserController::class, 'store'])
-             ->middleware(['permission:user:manage|client:create|courier:create|broker:create|external-admin:create|provider:create']);
+            ->middleware(['permission:user:manage|client:create|courier:create|broker:create|external-admin:create|provider:create']);
 
         // Tickets de Cambio
         Route::get('exchange-tickets', [\App\Http\Controllers\Api\V1\ExchangeTicketController::class, 'index']);
         Route::post('exchange-tickets', [\App\Http\Controllers\Api\V1\ExchangeTicketController::class, 'store'])->middleware('permission:ticket:create');
         Route::get('exchange-tickets/{exchange_ticket}', [\App\Http\Controllers\Api\V1\ExchangeTicketController::class, 'show'])->can('view', 'exchange_ticket');
         Route::put('exchange-tickets/{exchange_ticket}', [\App\Http\Controllers\Api\V1\ExchangeTicketController::class, 'update']);
-        
+
         Route::put('exchange-tickets/{exchange_ticket}/status', [\App\Http\Controllers\Api\V1\ExchangeTicketController::class, 'updateStatus']);
         Route::post('exchange-tickets/{exchange_ticket}/receipt', [\App\Http\Controllers\Api\V1\ReceiptController::class, 'store'])
-             ->middleware('permission:ticket:upload-proof');
+            ->middleware('permission:ticket:upload-proof');
         Route::get('exchange-tickets/{exchange_ticket}/sla', [\App\Http\Controllers\Api\V1\SlaController::class, 'show']);
 
         // Finanzas
         Route::post('exchange-tickets/{exchange_ticket}/costs', [\App\Http\Controllers\Api\V1\FinanceController::class, 'storeCost']);
         Route::post('exchange-tickets/{exchange_ticket}/close', [\App\Http\Controllers\Api\V1\FinanceController::class, 'close'])
-             ->middleware('four_agents')
-             ->can('settle', 'exchange_ticket');
-             
+            ->middleware('four_agents')
+            ->can('settle', 'exchange_ticket');
+
         Route::get('exchange-tickets/{exchange_ticket}/distribution', [\App\Http\Controllers\Api\V1\FinanceController::class, 'showDistribution']);
-        
+
         // Caja (Cash Registers)
         Route::middleware('permission:cash:view')->group(function () {
             Route::get('cash-registers', [\App\Http\Controllers\Api\V1\CashRegisterController::class, 'index']);
@@ -65,7 +70,7 @@ Route::prefix('v1')->group(function () {
         });
         Route::post('company-expenses', [\App\Http\Controllers\Api\V1\CompanyExpenseController::class, 'store'])->middleware('permission:expense:create');
         Route::post('company-expenses/{company_expense}/approve', [\App\Http\Controllers\Api\V1\CompanyExpenseController::class, 'approve'])->middleware('permission:expense:approve');
-        
+
         // Reportes
         Route::prefix('reports')->middleware('permission:report:view|ticket:audit-agents')->group(function () {
             Route::get('profit', [\App\Http\Controllers\Api\V1\ReportController::class, 'profit']);
@@ -78,5 +83,4 @@ Route::prefix('v1')->group(function () {
         Route::get('notifications', [\App\Http\Controllers\Api\V1\NotificationController::class, 'index']);
         Route::post('notifications/{notification}/read', [\App\Http\Controllers\Api\V1\NotificationController::class, 'markRead']);
     });
-
 });
