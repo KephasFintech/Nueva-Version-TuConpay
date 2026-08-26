@@ -57,6 +57,8 @@ class TicketStateMachine
             'notes'       => $notes,
         ]);
 
+        \App\Events\TicketStatusChanged::dispatch($ticket);
+
         return $ticket->fresh();
     }
 

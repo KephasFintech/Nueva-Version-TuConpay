@@ -99,6 +99,8 @@ class ExchangeTicketController extends ApiController
             'notes'      => 'Ticket creado',
         ]);
 
+        broadcast(new \App\Events\TicketCreated($ticket));
+
         return $this->created($ticket->load('client'), 'Ticket creado exitosamente');
     }
 
