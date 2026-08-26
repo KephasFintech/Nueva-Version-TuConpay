@@ -44,7 +44,7 @@ class ReportController extends ApiController
                 ->when($hasCurrencyFilter, fn($q) => $q->where('currency_from', $currency))
                 ->groupBy('status')
                 ->get()
-                ->pluck('count', 'status');
+                ->mapWithKeys(fn($item) => [$item->status->value => $item->count]);
 
             // 3. Monto total movido (volumen)
             $totalVolume = ExchangeTicket::whereBetween('created_at', [$startDate, $endDate])
